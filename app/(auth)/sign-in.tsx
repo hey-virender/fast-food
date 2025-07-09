@@ -3,22 +3,24 @@ import React, { useState } from "react";
 import { Link, router } from "expo-router";
 import CustomInput from "@/components/CustomInput";
 import CustomButton from "@/components/CustomButton";
+import { signIn } from "@/lib/appwrite";
 
-const SignIn = () => {
+const SignIn =() => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
 
-  const handleSubmit = () => {
-    if(form.email === "" || form.password === ""){
+  const handleSubmit =  async() => {
+    const {email, password} = form;
+    if(email === "" || password === ""){
       Alert.alert("Error", "Please fill in all fields");
       return;
     }
     setIsSubmitting(true);
   try {
-    //call appwrite sign in 
+    const session = await signIn({email, password});
     Alert.alert("Success", "User signed in successfully");
     router.replace("/");
   } catch (error) {
