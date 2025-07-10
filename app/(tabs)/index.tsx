@@ -1,6 +1,7 @@
 import { images, offers } from "@/constants";
 import React from "react";
 import {
+  Button,
   FlatList,
   Image,
   Pressable,
@@ -12,11 +13,16 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import cn from "clsx";
 import CartButton from "@/components/CartButton";
+import * as Sentry from "@sentry/react-native";
+import useAuthStore from "@/store/auth.store";
 
 export default function App() {
+  const {user} = useAuthStore();
+  
   return (
     <SafeAreaView className="flex-1 bg-white">
       <FlatList
+       
         ListHeaderComponent={() => {
           return (
             <View className="flex-between flex-row w-full my-5">
