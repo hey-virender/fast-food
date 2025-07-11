@@ -13,10 +13,9 @@ import { Redirect, Slot } from "expo-router";
 import { images } from "@/constants";
 import useAuthStore from "@/store/auth.store";
 
-
 export default function AuthLayout() {
-  const {isAuthenticated} = useAuthStore();
-  if(isAuthenticated) return <Redirect href="/"/>
+  const { isAuthenticated } = useAuthStore();
+  if (isAuthenticated) return <Redirect href="/" />;
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -41,8 +40,8 @@ export default function AuthLayout() {
             className="self-center size-48 absolute -bottom-16 z-10"
           />
         </View>
-        
-      <Slot />
+
+        <Slot />
       </ScrollView>
     </KeyboardAvoidingView>
   );

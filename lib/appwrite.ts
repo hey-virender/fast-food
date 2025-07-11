@@ -1,13 +1,18 @@
-import { CreateUserParams, SignInParams } from "@/type";
-import { Account, Avatars, Client, Databases, ID, Query } from "react-native-appwrite"
+import { CreateUserParams, GetMenuParams, SignInParams } from "@/type";
+import { Account, Avatars, Client, Databases, ID, Query, Storage } from "react-native-appwrite"
 
 
 export const appwriteConfig = {
   endPoint:process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT,
   platform:"com.virenderchauhan.fastfood",
   projectId:process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID,
-  databaseId:process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID,
-  userCollectionId:process.env.EXPO_PUBLIC_APPWRITE_USER_COLLECTION_ID,
+  bucketId:process.env.EXPO_PUBLIC_APPWRITE_BUCKET_ID!,
+  databaseId:process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+  userCollectionId:process.env.EXPO_PUBLIC_APPWRITE_USER_COLLECTION_ID!,
+  categoriesCollectionId:process.env.EXPO_PUBLIC_APPWRITE_CATEGORIES_COLLECTION_ID!,
+  menuCollectionId:process.env.EXPO_PUBLIC_APPWRITE_MENU_COLLECTION_ID!,
+  customizationsCollectionId:process.env.EXPO_PUBLIC_APPWRITE_CUSTOMIZATIONS_COLLECTION_ID!,
+  menuCustomizationsCollectionId:process.env.EXPO_PUBLIC_APPWRITE_MENU_CUSTOMIZATIONS_COLLECTION_ID!,
 }
 
 
@@ -19,6 +24,8 @@ client.setEndpoint(appwriteConfig.endPoint!).setProject(appwriteConfig.projectId
 export const account = new Account(client);
 
 export const databases = new Databases(client);
+
+export const storage = new Storage(client);
 
 const avatars = new Avatars(client);
 
@@ -54,7 +61,8 @@ export const signIn = async ({email,password}:SignInParams) => {
     if(!session) throw new Error("Failed to sign in");
     return session;
   } catch (error) {
-    
+    console.log("signIn error",error);
+    throw new Error(error as string)
   }
 }
 
@@ -71,6 +79,44 @@ export const getCurrentUser = async()=>{
     return currentUser.documents[0];
   } catch (error) {
     console.log(error);
+    throw new Error(error as string)
+  }
+}
+
+export const logout = async()=>{
+  try {
+    await account.deleteSession("current");
+  } catch (error) {
+    console.log(error);
+    throw new Error(error as string)
+  }
+}
+
+export const getMenu = async({category,query}:GetMenuParams) => {
+  try {
+    const queries:string[] = [];
+    if(category) queries.push(Query.equal('category',category));
+    if(query) queries.push(Query.search('name',query));
+
+    const menu = await databases.listDocuments(
+      appwriteConfig.databaseId!,
+      appwriteConfig.menuCollectionId!,
+      queries
+    )
+    return menu.documents;
+  } catch (error) {
+    throw new Error(error as string)
+  }
+}
+
+export const getCategories = async() => {
+  try {
+    const categories = await databases.listDocuments(
+      appwriteConfig.databaseId!,
+      appwriteConfig.categoriesCollectionId!,
+    )
+    return categories.documents;
+  } catch (error) {
     throw new Error(error as string)
   }
 }

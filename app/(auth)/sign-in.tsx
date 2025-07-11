@@ -23,7 +23,7 @@ const SignIn =() => {
   try {
     const session = await signIn({email, password});
     Alert.alert("Success", "User signed in successfully");
-    router.replace("/");
+    router.reload();
   } catch (error:any) {
     Alert.alert("Error", "Something went wrong");
     Sentry.captureEvent(error);
